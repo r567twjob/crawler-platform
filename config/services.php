@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'google_places' => [
+        'key' => env('GOOGLE_PLACES_API_KEY'),
+        'max_requests' => env('NEARBYSEARCH_MAX_REQUESTS', 10),
+    ],
+
 ];
