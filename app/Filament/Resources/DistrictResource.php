@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Cache;
 
 class DistrictResource extends Resource
 {
@@ -42,7 +43,20 @@ class DistrictResource extends Resource
                 Tables\Columns\TextColumn::make('id')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('name')->label('區域')->sortable()->searchable(),
                 Tables\Columns\IconColumn::make('processed')->label('處理狀態')->boolean()->sortable(),
-                Tables\Columns\TextColumn::make('grids_count')->label('Grid 數量')->counts('grids')->sortable(),
+                Tables\Columns\TextColumn::make('progress_bar')
+                    ->label('進度')
+                    ->formatStateUsing(function (District $record) {
+                        $progress = Cache::get($record->id . '_nearby_progress', 0);
+                        $total = $record->grids_count ?: 1;
+                        $percent = 100; //min(100, round(($progress / $total) * 100));
+                        $bar = '<div style="background:#e5e7eb;border-radius:4px;width:100%;height:18px;position:relative;">
+                            <div style="background:#3b82f6;width:' . $percent . '%;height:100%;border-radius:4px;"></div>
+                            <div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#111;">' . $percent . '%</div>
+                        </div>';
+                        return $bar;
+                    })
+                    ->html(),
+
             ])
             ->filters([
                 //

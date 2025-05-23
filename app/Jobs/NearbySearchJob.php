@@ -12,20 +12,20 @@ class NearbySearchJob implements ShouldQueue
     use Queueable;
     public $tries = 3; // 限制最多重試 3 次
 
-    protected $lat, $lng, $district;
+    protected $lat, $lng, $grid;
 
-    public function __construct($lat, $lng, $district)
+    public function __construct($lat, $lng, $grid)
     {
         $this->lat = $lat;
         $this->lng = $lng;
-        $this->district = $district;
+        $this->grid = $grid;
     }
 
     public function handle()
     {
         $key = config('services.google_places.key');
         $maxRequests = intval(config('services.google_places.max_requests', 10));
-        $requestCount = Cache::get($this->district->name . '_nearby_request_count', 0);
+        $requestCount = Cache::get('today_request_count', 0);
 
         if ($requestCount >= $maxRequests) return;
 
@@ -43,6 +43,7 @@ class NearbySearchJob implements ShouldQueue
             "places.googleMapsUri",
             // "places.photos",
             // "places.reviews"
+
         ]);
 
         $headers = [
@@ -67,15 +68,14 @@ class NearbySearchJob implements ShouldQueue
 
         if ($response->successful()) {
             $data = $response->json();
-            Cache::increment($this->district->name . '_nearby_request_count');
-            Cache::increment($this->district->name . '_nearby_progress');
-
+            Cache::increment('today_request_count');
+            Cache::increment($this->grid->district->id . '_nearby_progress');
             // 儲存資料
-            $directory = storage_path("app/{$this->district->id}");
+            $directory = storage_path("app/places/{$this->grid->district->id}");
             if (!is_dir($directory)) {
                 mkdir($directory, 0755, true);
             }
-            $filename = storage_path("app/{$this->district->id}/{$this->district->id}_{$this->lat}_{$this->lng}.json");
+            $filename = storage_path("{$directory}/{$this->grid->id}.json");
             file_put_contents($filename, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         } else {
             // 錯誤處理

@@ -6,18 +6,12 @@ use App\Jobs\NearbySearchJob;
 use App\Models\District;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ProcessController extends Controller
 {
 
     public function startNearbySearch(Request $request)
     {
-        Log::info('Start nearby search', [
-            'request' => $request->all(),
-            'district' => $request->input('district')
-        ]);
-
         $district = District::find($request->input('district'));
 
         if ($district->processed) {
@@ -37,16 +31,14 @@ class ProcessController extends Controller
             }
         }
 
-        Cache::put($district->name . '_nearby_request_count', 0);
-        Cache::put($district->name . '_nearby_progress', 0);
-        Cache::put($district->name . '_nearby_total', count($grid));
+        Cache::put($district->id . '_nearby_progress', 0);
 
         foreach ($grid as [$lat, $lng]) {
-            $district->grids()->create([
+            $grid = $district->grids()->create([
                 'lat' => $lat,
                 'lng' => $lng
             ]);
-            dispatch(new \App\Jobs\NearbySearchJob($lat, $lng, $district));
+            dispatch(new NearbySearchJob($lat, $lng, $grid));
         }
 
         $district->processed = true;
