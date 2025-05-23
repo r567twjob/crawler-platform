@@ -22,4 +22,9 @@ class TestController extends Controller
 
         return response()->json(['message' => 'Email sent successfully']);
     }
+
+    public function testSms(Request $request)
+    {
+        return response()->json(['message' => 'Sms sent successfully']);
+    }
 }

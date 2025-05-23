@@ -71,11 +71,12 @@ class NearbySearchJob implements ShouldQueue
             Cache::increment('today_request_count');
             Cache::increment($this->grid->district->id . '_nearby_progress');
             // 儲存資料
-            $directory = storage_path("app/places/{$this->grid->district->id}");
+            $folder = "app/places/{$this->grid->district->id}";
+            $directory = storage_path($folder);
             if (!is_dir($directory)) {
                 mkdir($directory, 0755, true);
             }
-            $filename = storage_path("{$directory}/{$this->grid->id}.json");
+            $filename = storage_path("{$folder}/{$this->grid->id}.json");
             file_put_contents($filename, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         } else {
             // 錯誤處理

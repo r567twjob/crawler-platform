@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class DistrictResource extends Resource
 {
@@ -45,17 +46,28 @@ class DistrictResource extends Resource
                 Tables\Columns\IconColumn::make('processed')->label('處理狀態')->boolean()->sortable(),
                 Tables\Columns\TextColumn::make('progress_bar')
                     ->label('進度')
-                    ->formatStateUsing(function (District $record) {
+                    ->getStateUsing(function ($record) {
                         $progress = Cache::get($record->id . '_nearby_progress', 0);
-                        $total = $record->grids_count ?: 1;
-                        $percent = 100; //min(100, round(($progress / $total) * 100));
-                        $bar = '<div style="background:#e5e7eb;border-radius:4px;width:100%;height:18px;position:relative;">
-                            <div style="background:#3b82f6;width:' . $percent . '%;height:100%;border-radius:4px;"></div>
-                            <div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#111;">' . $percent . '%</div>
-                        </div>';
-                        return $bar;
+                        $gridsCount = $record->grids->count();
+                        if ($gridsCount > 0) {
+                            if (round($progress / $gridsCount * 100, 2) > 100) {
+                                return 100;
+                            } else {
+                                return round($progress / $gridsCount * 100, 2);
+                            }
+                        } else {
+                            return 0;
+                        }
                     })
-                    ->html(),
+                    ->formatStateUsing(function ($state) {
+
+                        return "<div style='display:flex;align-items:center;justify-content:center;'>
+                            <div style='margin-right:5px;'>{$state}%</div>
+                            <div style='background:#e5e7eb;border-radius:4px;width:100px;height:18px;position:relative;'>
+                                <div style='background:#3b82f6;width:{$state}%;height:100%;border-radius:4px;'></div>
+                            </div>
+                            </div>";
+                    })->html(),
 
             ])
             ->filters([

@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Grid extends Model
 {
+    protected $fillable = [
+        'district_id',
+        'lat',
+        'lng',
+    ];
+
     //
     public function district()
     {
