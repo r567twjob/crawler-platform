@@ -3,24 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\NearbySearchJob;
+use App\Models\District;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ProcessController extends Controller
 {
 
     public function startNearbySearch(Request $request)
     {
-        $district = $request->input('district');
-        $districts = json_decode(
-            file_get_contents(storage_path('app/tainan_districts.json')),
-            true
-        );
+        Log::info('Start nearby search', [
+            'request' => $request->all(),
+            'district' => $request->input('district')
+        ]);
 
-        $latMin = $districts[$district]['lat_min'];
-        $latMax = $districts[$district]['lat_max'];
-        $lngMin = $districts[$district]['lng_min'];
-        $lngMax = $districts[$district]['lng_max'];
+        $district = District::find($request->input('district'));
+
+        if ($district->processed) {
+            return response()->json(['message' => 'This district has already been processed.'], 400);
+        }
+
+        $latMin = $district->lat_min;
+        $latMax = $district->lat_max;
+        $lngMin = $district->lng_min;
+        $lngMax = $district->lng_max;
         $step = 0.005;
 
         $grid = [];
@@ -30,21 +37,22 @@ class ProcessController extends Controller
             }
         }
 
-        Cache::put($district . '_nearby_request_count', 0);
-        Cache::put($district . '_nearby_progress', 0);
-        Cache::put($district . '_nearby_total', count($grid));
+        Cache::put($district->name . '_nearby_request_count', 0);
+        Cache::put($district->name . '_nearby_progress', 0);
+        Cache::put($district->name . '_nearby_total', count($grid));
 
         foreach ($grid as [$lat, $lng]) {
+            $district->grids()->create([
+                'lat' => $lat,
+                'lng' => $lng
+            ]);
             dispatch(new \App\Jobs\NearbySearchJob($lat, $lng, $district));
         }
 
-        $districts[$district]["processed"] = true;
-        file_put_contents(
-            storage_path('app/tainan_districts.json'),
-            json_encode($districts, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-        );
+        $district->processed = true;
+        $district->save();
 
-        return redirect()->route('list');
+        return response()->json(["message" => "Success"]);
     }
 
     public function getProgress()

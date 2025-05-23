@@ -42,6 +42,7 @@ class DistrictResource extends Resource
                 Tables\Columns\TextColumn::make('id')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('name')->label('區域')->sortable()->searchable(),
                 Tables\Columns\IconColumn::make('processed')->label('處理狀態')->boolean()->sortable(),
+                Tables\Columns\TextColumn::make('grids_count')->label('Grid 數量')->counts('grids')->sortable(),
             ])
             ->filters([
                 //
