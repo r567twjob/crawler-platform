@@ -38,23 +38,12 @@ class ProcessController extends Controller
                 'lat' => $lat,
                 'lng' => $lng
             ]);
-            dispatch(new NearbySearchJob($lat, $lng, $grid));
+            NearbySearchJob::dispatch($lat, $lng, $grid);
         }
 
         $district->processed = true;
         $district->save();
 
         return response()->json(["message" => "Success"]);
-    }
-
-    public function getProgress()
-    {
-        $district = request()->input('district');
-
-        return [
-            'done' => Cache::get($district . '_nearby_progress', 0),
-            'total' => Cache::get($district . '_nearby_total', 0),
-            'request_count' => Cache::get($district . '_nearby_request_count', 0)
-        ];
     }
 }

@@ -2,10 +2,11 @@
 
 namespace App\Jobs;
 
-use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Queue;
 
 class NearbySearchJob implements ShouldQueue
 {
@@ -23,6 +24,11 @@ class NearbySearchJob implements ShouldQueue
 
     public function handle()
     {
+        // test
+
+        Cache::increment($this->grid->district->id . '_nearby_progress');
+        return;
+        //
         $key = config('services.google_places.key');
         $maxRequests = intval(config('services.google_places.max_requests', 10));
         $requestCount = Cache::get('today_request_count', 0);
@@ -68,7 +74,6 @@ class NearbySearchJob implements ShouldQueue
 
         if ($response->successful()) {
             $data = $response->json();
-            Cache::increment('today_request_count');
             Cache::increment($this->grid->district->id . '_nearby_progress');
             // 儲存資料
             $folder = "app/places/{$this->grid->district->id}";

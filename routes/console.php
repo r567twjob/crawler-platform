@@ -12,9 +12,14 @@ Artisan::command('inspire', function () {
 
 
 // Schedule::command('inspire')->everyMinute()->purpose('Run the scheduled tasks');
-Schedule::call(function () {
-    Log::info("This is a scheduled task running every minute.");
-})->everyMinute();
+// Schedule::call(function () {
+//     Log::info("This is a scheduled task running every minute.");
+// })->everyMinute();
 
-Schedule::command('inspire')
+// Schedule::command('inspire')
+//     ->everyMinute();
+
+Schedule::command('app:process-job')
     ->everyMinute();
+Schedule::command('app:daily-clear-cache')
+    ->dailyAt('00:00');
