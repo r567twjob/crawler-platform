@@ -11,14 +11,14 @@ class HomeController extends Controller
     //
     public function index()
     {
-        $districts = json_decode(
-            file_get_contents(storage_path('app/tainan_districts.json')),
-            true
-        );
+        // $districts = json_decode(
+        //     file_get_contents(storage_path('app/tainan_districts.json')),
+        //     true
+        // );
 
-        return view('home')->with([
-            'districts' => $districts,
-        ]);
+        // return view('home')->with([
+        //     'districts' => $districts,
+        // ]);
     }
 
     public function getList()

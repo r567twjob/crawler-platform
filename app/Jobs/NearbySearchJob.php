@@ -39,7 +39,7 @@ class NearbySearchJob implements ShouldQueue
 
         $fields = implode(",", [
             "places.id",
-            "places.name",
+            // "places.name",
             "places.displayName",
             "places.formattedAddress",
             "places.types",
