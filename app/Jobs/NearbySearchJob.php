@@ -6,7 +6,6 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\Queue;
 
 class NearbySearchJob implements ShouldQueue
 {
@@ -25,7 +24,6 @@ class NearbySearchJob implements ShouldQueue
     public function handle()
     {
         // test
-
         Cache::increment($this->grid->district->id . '_nearby_progress');
         return;
         //
@@ -83,6 +81,9 @@ class NearbySearchJob implements ShouldQueue
             }
             $filename = storage_path("{$folder}/{$this->grid->id}.json");
             file_put_contents($filename, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
+            // 丟到 Queue 裡面新增 Place 資料
+            AddPlaceJob::dispatch($this->grid)->onQueue('default');
         } else {
             // 錯誤處理
             throw new \Exception("Error fetching data for {$this->lat}, {$this->lng}: " . $response->body());

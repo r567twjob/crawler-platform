@@ -36,7 +36,7 @@ class ProcessJob extends Command
         } else {
             Artisan::call('queue:work', [
                 '--once' => true,
-                '--queue' => 'default',
+                '--queue' => 'nearby_search',
                 '--timeout' => 60,
             ]);
             Cache::increment('today_request_count');

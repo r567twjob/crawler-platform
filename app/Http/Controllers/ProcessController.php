@@ -38,7 +38,7 @@ class ProcessController extends Controller
                 'lat' => $lat,
                 'lng' => $lng
             ]);
-            NearbySearchJob::dispatch($lat, $lng, $grid);
+            NearbySearchJob::dispatch($lat, $lng, $grid)->onQueue('nearby_search');
         }
 
         $district->processed = true;
