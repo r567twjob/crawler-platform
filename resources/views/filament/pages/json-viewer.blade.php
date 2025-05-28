@@ -5,7 +5,6 @@
             <select wire:model="selectedFile" id="selectedFile"
                 class="border rounded px-2 py-1 text-black dark:text-white dark:bg-gray-800 dark:border-gray-600"
                 wire:change="loadJsonData">
-                <option value="" class="text-black dark:text-white dark:bg-gray-800">請選擇</option>
                 @foreach ($availableFiles as $file)
                     <option value="{{ $file->id }}" class="text-black dark:text-white dark:bg-gray-800">
                         {{ $file->id }}</option>

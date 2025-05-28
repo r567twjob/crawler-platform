@@ -25,6 +25,7 @@ class NearbySearchJob implements ShouldQueue
     {
         // test
         Cache::increment($this->grid->district->id . '_nearby_progress');
+        AddPlaceJob::dispatch($this->grid)->onQueue('default');
         return;
         //
         $key = config('services.google_places.key');
@@ -83,7 +84,8 @@ class NearbySearchJob implements ShouldQueue
             file_put_contents($filename, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
             // 丟到 Queue 裡面新增 Place 資料
-            AddPlaceJob::dispatch($this->grid)->onQueue('default');
+            // dispatch(new AddPlaceJob($this->grid))->onQueue('default');
+            // AddPlaceJob::dispatch($this->grid)->onQueue('default');
         } else {
             // 錯誤處理
             throw new \Exception("Error fetching data for {$this->lat}, {$this->lng}: " . $response->body());
