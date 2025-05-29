@@ -6,12 +6,19 @@ use App\Jobs\NearbySearchJob;
 use App\Models\District;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ProcessController extends Controller
 {
 
     public function startNearbySearch(Request $request)
     {
+        // 檢查是否有 Total Request Cache
+        $totalRequestCache = Cache::get('today_request_count', 0);
+        if ($totalRequestCache >= env('NEARBYSEARCH_MAX_REQUESTS', 100)) {
+            return response()->json(['message' => '今日已達請求上限'], 429);
+        }
+
         $district = District::find($request->input('district'));
 
         if ($district->processed) {
