@@ -6,6 +6,7 @@ use App\Models\District;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,6 +20,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'jimmy',
             'email' => 'r567twjob@gmail.com',
+            'password' => bcrypt('qwert231')
         ]);
 
 
@@ -70,5 +72,7 @@ class DatabaseSeeder extends Seeder
             "lng_min" => 120.153,
             "lng_max" => 120.1835
         ]);
+
+        Cache::put("today_request_count", 0);
     }
 }
