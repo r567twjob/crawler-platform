@@ -28,12 +28,43 @@ class DistrictResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->label('區域名稱')->required(),
-                Forms\Components\ToggleButtons::make('processed')->label('處理狀態')->boolean()->inline()->default(false)->disabled()->required(),
-                Forms\Components\TextInput::make('lat_min')->numeric()->step(0.0001)->required(),
-                Forms\Components\TextInput::make('lat_max')->numeric()->step(0.0001)->required()->gt('lat_min'),
-                Forms\Components\TextInput::make('lng_min')->numeric()->step(0.0001)->required(),
-                Forms\Components\TextInput::make('lng_max')->numeric()->step(0.0001)->required()->gt('lng_min'),
+                Forms\Components\TextInput::make('name')
+                    ->label('區域名稱')
+                    ->required(),
+
+                Forms\Components\ToggleButtons::make('processed')
+                    ->label('處理狀態')
+                    ->boolean()
+                    ->inline()
+                    ->default(false)
+                    ->disabled()
+                    ->required(),
+
+                Forms\Components\TextInput::make('lat_min')
+                    ->numeric()
+                    ->step(0.0001)
+                    ->required()
+                    ->disabled(fn($record) => $record?->processed),
+
+                Forms\Components\TextInput::make('lat_max')
+                    ->numeric()
+                    ->step(0.0001)
+                    ->required()
+                    ->gt('lat_min')
+                    ->disabled(fn($record) => $record?->processed),
+
+                Forms\Components\TextInput::make('lng_min')
+                    ->numeric()
+                    ->step(0.0001)
+                    ->required()
+                    ->disabled(fn($record) => $record?->processed),
+
+                Forms\Components\TextInput::make('lng_max')
+                    ->numeric()
+                    ->step(0.0001)
+                    ->required()
+                    ->gt('lng_min')
+                    ->disabled(fn($record) => $record?->processed),
             ])->columns(2);
     }
 
@@ -62,10 +93,10 @@ class DistrictResource extends Resource
                     ->formatStateUsing(function ($state) {
 
                         return "<div style='display:flex;align-items:center;justify-content:center;'>
-                            <div style='margin-right:5px;'>{$state}%</div>
-                            <div style='background:#e5e7eb;border-radius:4px;width:100px;height:18px;position:relative;'>
-                                <div style='background:#3b82f6;width:{$state}%;height:100%;border-radius:4px;'></div>
-                            </div>
+                                    <div style='background:#e5e7eb;border-radius:4px;width:100px;height:18px;position:relative;'>
+                                        <div style='background:#3b82f6;width:{$state}%;height:100%;border-radius:4px;'></div>
+                                    </div>
+                                    <div style='margin-left:10px;'>{$state}%</div>
                             </div>";
                     })->html(),
 
@@ -79,7 +110,7 @@ class DistrictResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ])
-            ->poll('60s');
+            ->poll('3s');
     }
 
     public static function getRelations(): array
