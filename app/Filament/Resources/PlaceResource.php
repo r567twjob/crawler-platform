@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PlaceResource\Pages;
 use App\Filament\Resources\PlaceResource\RelationManagers;
 use App\Models\Place;
+use App\Models\PlaceType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -27,16 +28,18 @@ class PlaceResource extends Resource
         $place_types = ['restaurant' => '餐廳', 'cafe' => '咖啡館', 'bar' => '酒吧', 'park' => '公園', 'museum' => '博物館', 'shopping_mall' => '購物中心', 'gym' => '健身房', 'hospital' => '醫院', 'school' => '學校', 'library' => '圖書館'];
         return $form
             ->schema([
-                Forms\Components\TextInput::make('resource')
+                Forms\Components\Select::make('resource')
                     ->label('資源')
                     ->required()
-                    ->maxLength(255)
-                    ->disabled(),
+                    ->disabled(fn($record) => $record?->id !== null)
+                    ->options([
+                        'google' => 'Google Maps',
+                    ]),
                 Forms\Components\TextInput::make('unique_id')
                     ->label('id')
                     ->required()
                     ->maxLength(255)
-                    ->disabled(),
+                    ->disabled(fn($record) => $record?->id !== null),
                 Forms\Components\TextInput::make('formatted_address')
                     ->label('地址')
                     ->required()
@@ -48,8 +51,12 @@ class PlaceResource extends Resource
                 Forms\Components\Select::make('types')
                     ->label('類型')
                     ->multiple()
-                    ->options($place_types)
-                    ->required(),
+                    ->options(function ($get) {
+                        $resource = $get('resource');
+                        return PlaceType::where('resource', $resource)->pluck('label', 'key')->toArray();
+                    })
+                    ->required()
+                    ->reactive(),
                 Forms\Components\TextInput::make('google_maps_uri')
                     ->label('網址')
                     ->url(),

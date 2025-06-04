@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\District;
+use App\Models\PlaceType;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -72,6 +73,17 @@ class DatabaseSeeder extends Seeder
             "lng_min" => 120.153,
             "lng_max" => 120.1835
         ]);
+
+        // 讀取 Storage app 中的 google_map_types.csv 檔案
+        $filePath = storage_path('app/google_map_types.csv');
+        $types = array_map('str_getcsv', file($filePath));
+        foreach ($types as $type) {
+            PlaceType::factory()->create([
+                'resource' => 'google',
+                'label' => $type[1],
+                'key'  => $type[0]
+            ]);
+        }
 
         Cache::put("today_request_count", 0);
         Cache::put("today_request_day", date("Y-m-d"));

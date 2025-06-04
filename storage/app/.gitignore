@@ -2,3 +2,4 @@
 !private/
 !public/
 !.gitignore
+!google_map_types.csv
