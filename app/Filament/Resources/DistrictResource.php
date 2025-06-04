@@ -99,6 +99,16 @@ class DistrictResource extends Resource
                                     <div style='margin-left:10px;'>{$state}%</div>
                             </div>";
                     })->html(),
+                Tables\Columns\TextColumn::make('remaining_grids')
+                    ->label('餘下')
+                    ->getStateUsing(function ($record) {
+                        return $record->grids->where("place_count", 0)->count();
+                    }),
+                Tables\Columns\TextColumn::make('total_grids')
+                    ->label('餘下')
+                    ->getStateUsing(function ($record) {
+                        return $record->grids->count();
+                    }),
 
             ])
             ->filters([
