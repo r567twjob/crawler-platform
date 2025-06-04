@@ -23,12 +23,6 @@ class NearbySearchJob implements ShouldQueue
 
     public function handle()
     {
-        // test
-        // Cache::increment($this->grid->district->id . '_nearby_progress');
-        // AddPlaceJob::dispatch($this->grid)->onQueue('default');
-        // return;
-        //
-
         // 正式的 Nearby Search
         $key = config('services.google_places.key');
         // 文件參考: https://developers.google.com/maps/documentation/places/web-service/nearby-search?hl=zh-tw

@@ -74,5 +74,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Cache::put("today_request_count", 0);
+        Cache::put("today_request_day", date("Y-m-d"));
     }
 }

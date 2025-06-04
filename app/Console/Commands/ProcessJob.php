@@ -31,7 +31,7 @@ class ProcessJob extends Command
         $limit = config('services.google_places.max_requests', 10);
         $processed = Cache::get('today_request_count', 0);
 
-        if ($processed > $limit) {
+        if ($processed >= $limit) {
             $this->info("Today has already processed {$processed} requests, which is the limit of {$limit}.");
             return;
         } else {

@@ -26,7 +26,9 @@ class DailyClearCache extends Command
      */
     public function handle()
     {
-        //
-        Cache::put("today_request_count", 0);
+        if (Cache::get("today_request_day") !== date("Y-m-d")) {
+            Cache::put("today_request_count", 0);
+            Cache::put("today_request_day", date("Y-m-d"));
+        }
     }
 }
