@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('places', function (Blueprint $table) {
             $table->id();
             $table->string('resource');
-            $table->string('unique_id')->nullable();
+            $table->string('unique_id');
+            $table->string('types');
             $table->string('name')->nullable();
             $table->string('rating')->nullable();
             $table->string('user_rating_count')->nullable();
             $table->string('formatted_address')->nullable();
             $table->string('google_maps_uri')->nullable();
-            $table->string('types')->nullable();
             $table->timestamps();
         });
     }

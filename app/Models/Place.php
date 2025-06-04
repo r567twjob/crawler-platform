@@ -17,4 +17,18 @@ class Place extends Model
         'user_rating_count',
         'google_maps_uri'
     ];
+
+    public function getTypesAttribute($value)
+    {
+        return explode(',', $value);
+    }
+
+    public function setTypesAttribute($value)
+    {
+        if (is_array($value)) {
+            $this->attributes['types'] = implode(',', $value);
+        } else {
+            $this->attributes['types'] = $value;
+        }
+    }
 }

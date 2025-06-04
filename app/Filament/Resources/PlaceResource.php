@@ -24,6 +24,7 @@ class PlaceResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $place_types = ['restaurant' => '餐廳', 'cafe' => '咖啡館', 'bar' => '酒吧', 'park' => '公園', 'museum' => '博物館', 'shopping_mall' => '購物中心', 'gym' => '健身房', 'hospital' => '醫院', 'school' => '學校', 'library' => '圖書館'];
         return $form
             ->schema([
                 Forms\Components\TextInput::make('resource')
@@ -47,13 +48,7 @@ class PlaceResource extends Resource
                 Forms\Components\Select::make('types')
                     ->label('類型')
                     ->multiple()
-                    ->options([
-                        // 在這裡填入你的選項，例如：
-                        'train_station' => 'A 類型',
-                        'transit_station' => 'B 類型',
-                        'c' => 'C 類型',
-                        // ...
-                    ])
+                    ->options($place_types)
                     ->required(),
                 Forms\Components\TextInput::make('google_maps_uri')
                     ->label('網址')
@@ -111,7 +106,7 @@ class PlaceResource extends Resource
     {
         return [
             'index' => Pages\ListPlaces::route('/'),
-            // 'create' => Pages\CreatePlace::route('/create'),
+            'create' => Pages\CreatePlace::route('/create'),
             'edit' => Pages\EditPlace::route('/{record}/edit'),
         ];
     }
