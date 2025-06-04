@@ -84,9 +84,6 @@ class PlaceResource extends Resource
                     ->searchable()
                     ->url(fn($record) => $record->google_maps_uri)
                     ->openUrlInNewTab(),
-                Tables\Columns\TextColumn::make('types')
-                    ->label('類型')
-                    ->searchable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('types')
