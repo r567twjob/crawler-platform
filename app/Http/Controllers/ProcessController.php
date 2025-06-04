@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\NearbySearchJob;
+use App\Jobs\GoogleNearbySearchJob;
 use App\Models\District;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ProcessController extends Controller
 {
@@ -15,7 +14,7 @@ class ProcessController extends Controller
     {
         // 檢查是否有 Total Request Cache
         $totalRequestCache = Cache::get('today_request_count', 0);
-        if ($totalRequestCache >= env('NEARBYSEARCH_MAX_REQUESTS', 100)) {
+        if ($totalRequestCache >= config('services.google_places.max_requests', 10)) {
             return response()->json(['message' => '今日已達請求上限'], 429);
         }
 
@@ -45,7 +44,7 @@ class ProcessController extends Controller
                 'lat' => $lat,
                 'lng' => $lng
             ]);
-            NearbySearchJob::dispatch($lat, $lng, $grid)->onQueue('nearby_search');
+            GoogleNearbySearchJob::dispatch($lat, $lng, $grid)->onQueue('nearby_search');
         }
 
         $district->processed = true;

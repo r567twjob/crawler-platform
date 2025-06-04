@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class NearbySearchJob implements ShouldQueue
+class GoogleNearbySearchJob implements ShouldQueue
 {
     use Queueable;
     public $tries = 3; // 限制最多重試 3 次
@@ -30,17 +30,13 @@ class NearbySearchJob implements ShouldQueue
 
         $fields = implode(",", [
             "places.id",
-            // "places.name",
             "places.displayName",
             "places.formattedAddress",
             "places.types",
             "places.rating",
             "places.userRatingCount",
             "places.location",
-            "places.googleMapsUri",
-            // "places.photos",
-            // "places.reviews"
-
+            "places.googleMapsUri"
         ]);
 
         $headers = [
@@ -134,7 +130,7 @@ class NearbySearchJob implements ShouldQueue
             file_put_contents($filename, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
             // 丟到 Queue 裡面新增 Place 資料
-            AddPlaceJob::dispatch($this->grid)->onQueue('default');
+            AddPlaceJob::dispatch($this->grid, 'google')->onQueue('default');
 
             // 更新 grid 的 places_count
             $this->grid->place_count = count($data['places'] ?? []);

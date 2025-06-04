@@ -12,14 +12,15 @@ class AddPlaceJob implements ShouldQueue
 {
     use Queueable;
     public $grid;
+    public $resource = '';
 
     /**
      * Create a new job instance.
      */
-    public function __construct($grid)
+    public function __construct($grid, $resource)
     {
-        //
         $this->grid = $grid;
+        $this->resource = $resource;
     }
 
     /**
@@ -27,9 +28,17 @@ class AddPlaceJob implements ShouldQueue
      */
     public function handle(): void
     {
-        //
         $grid = $this->grid;
+        $resource = $this->resource;
 
+        // 更據他是何種 Resource 來決定如何處理
+        if ($resource == 'google') {
+            $this->handleGooglePlaces($grid);
+        }
+    }
+
+    private function handleGooglePlaces(Grid $grid): void
+    {
         $folder = "app/places/{$grid->district->id}";
         $filename = storage_path("{$folder}/{$grid->id}.json");
         if (file_exists($filename)) {
@@ -49,10 +58,7 @@ class AddPlaceJob implements ShouldQueue
                 $resource['types'] = isset($data['types']) ? implode(',', $data['types']) : null;
 
                 // Save the place to the database
-                Place::updateOrCreate(
-                    ['unique_id' => $data['id']],
-                    $resource
-                );
+                Place::updateOrCreate(['unique_id' => $data['id'], 'resource' => 'google'], $resource);
             }
         }
     }
