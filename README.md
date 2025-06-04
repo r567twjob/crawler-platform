@@ -59,9 +59,3 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
--   Google 會有兩個同樣地點,但是對於 Google 來說會是兩個不同的東西
--   研究清楚這個收費方式, 避免收費
-
--   介面優化, 讓他可以選擇哪一個類別等 (設計 Type 的部分 讓他可以選擇哪個類別)
--   優化 today request count 的部分 改用日期

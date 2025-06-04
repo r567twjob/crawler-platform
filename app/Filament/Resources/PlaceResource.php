@@ -29,23 +29,35 @@ class PlaceResource extends Resource
                 Forms\Components\TextInput::make('resource')
                     ->label('資源')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->disabled(),
                 Forms\Components\TextInput::make('unique_id')
-                    ->label('唯一識別碼')
+                    ->label('id')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->disabled(),
                 Forms\Components\TextInput::make('formatted_address')
-                    ->label('格式化地址')
+                    ->label('地址')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('name')
                     ->label('名稱')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('types')
+                Forms\Components\Select::make('types')
                     ->label('類型')
-                    ->required()
-                    ->maxLength(255),
+                    ->multiple()
+                    ->options([
+                        // 在這裡填入你的選項，例如：
+                        'train_station' => 'A 類型',
+                        'transit_station' => 'B 類型',
+                        'c' => 'C 類型',
+                        // ...
+                    ])
+                    ->required(),
+                Forms\Components\TextInput::make('google_maps_uri')
+                    ->label('網址')
+                    ->url(),
                 Forms\Components\TextInput::make('rating')
                     ->label('評分')
                     ->numeric()
@@ -55,10 +67,7 @@ class PlaceResource extends Resource
                     ->label('用戶評分數量')
                     ->numeric()
                     ->default(0),
-                Forms\Components\TextInput::make('google_maps_uri')
-                    ->label('Google 地圖 URI')
-                    ->url()
-            ])->columns(2);
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table
@@ -71,7 +80,9 @@ class PlaceResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('名稱')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->url(fn($record) => $record->google_maps_uri)
+                    ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('types')
                     ->label('類型')
                     ->searchable(),

@@ -29,7 +29,7 @@ class DistrictResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')->label('區域名稱')->required(),
-                Forms\Components\ToggleButtons::make('processed')->label('處理狀態')->boolean()->inline()->default(false)->required(),
+                Forms\Components\ToggleButtons::make('processed')->label('處理狀態')->boolean()->inline()->default(false)->disabled()->required(),
                 Forms\Components\TextInput::make('lat_min')->numeric()->step(0.0001)->required(),
                 Forms\Components\TextInput::make('lat_max')->numeric()->step(0.0001)->required()->gt('lat_min'),
                 Forms\Components\TextInput::make('lng_min')->numeric()->step(0.0001)->required(),
