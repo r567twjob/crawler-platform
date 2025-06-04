@@ -25,7 +25,6 @@ class PlaceResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $place_types = ['restaurant' => '餐廳', 'cafe' => '咖啡館', 'bar' => '酒吧', 'park' => '公園', 'museum' => '博物館', 'shopping_mall' => '購物中心', 'gym' => '健身房', 'hospital' => '醫院', 'school' => '學校', 'library' => '圖書館'];
         return $form
             ->schema([
                 Forms\Components\Select::make('resource')
@@ -90,7 +89,21 @@ class PlaceResource extends Resource
                     ->searchable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('types')
+                    ->label('類型')
+                    ->multiple()
+                    ->options(
+                        \App\Models\PlaceType::pluck('label', 'key')->toArray()
+                    )
+                    ->query(function ($query, $data) {
+                        if (!empty($data['values'])) {
+                            $query->where(function ($q) use ($data) {
+                                foreach ($data['values'] as $type) {
+                                    $q->orWhereRaw("FIND_IN_SET(?, types)", [$type]);
+                                }
+                            });
+                        }
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
