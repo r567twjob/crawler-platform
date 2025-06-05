@@ -109,7 +109,9 @@ class PlaceResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->paginated([10, 20, 30]) // 加入分頁選項
+            ->defaultPaginationPageOption(10);
     }
 
     public static function getRelations(): array
