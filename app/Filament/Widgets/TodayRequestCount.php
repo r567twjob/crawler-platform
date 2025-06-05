@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Cache;
 
 class TodayRequestCount extends BaseWidget
 {
+    protected static ?int $refreshInterval = 3;
+
     protected function getStats(): array
     {
         return [
