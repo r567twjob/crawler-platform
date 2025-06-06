@@ -11,6 +11,7 @@ use Filament\Forms\Components\Select;
 class GoogleJsonViewer extends Page
 {
     public $name = 'google-json-viewer';
+    public $message = "";
     public static ?string $title = "JSON 檔案檢視器 (Google)";
     public $availableFiles = [];
     public $selectedFile = null;
@@ -44,9 +45,17 @@ class GoogleJsonViewer extends Page
         $path = storage_path("app/places/{$grid->district->id}/{$grid->id}.json");
         if (File::exists($path)) {
             $json = json_decode(file_get_contents($path));
-            $this->jsonData = is_array($json->places) ? $json->places : [];
+            if ($json === []) {
+                $this->jsonData = [];
+                $this->message = "沒有資料可供顯示。";
+                return;
+            } else {
+                $this->jsonData = is_array($json->places) ? $json->places : [];
+                $this->message = "沒有資料可供顯示。";
+            }
         } else {
             $this->jsonData = [];
+            $this->message = "尚未下載";
         }
     }
 

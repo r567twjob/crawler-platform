@@ -56,7 +56,7 @@
 
         @if (count($jsonData) === 0)
             <div class="overflow-x-auto">
-                <p>尚未下載</p>
+                <p>{{ $message }}</p>
             </div>
         @else
             <div class="overflow-x-auto">

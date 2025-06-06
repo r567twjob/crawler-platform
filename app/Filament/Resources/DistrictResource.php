@@ -102,7 +102,9 @@ class DistrictResource extends Resource
                 Tables\Columns\TextColumn::make('remaining_grids')
                     ->label('餘下')
                     ->getStateUsing(function ($record) {
-                        return $record->grids->where("place_count", 0)->count();
+                        $progress = Cache::get($record->id . '_nearby_progress', 0);
+                        $gridsCount = $record->grids->count();
+                        return $gridsCount - $progress;
                     }),
                 Tables\Columns\TextColumn::make('total_grids')
                     ->label('共有')
