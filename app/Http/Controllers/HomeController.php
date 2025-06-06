@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
@@ -13,13 +13,22 @@ class HomeController extends Controller
         return response()->json("Welcome to the Home Page!");
     }
 
-    public function getGoogleGrid(Request $request)
+    public function getGoogleGrid()
     {
         return view('google-grid');
     }
 
     public function postGoogleGrid(Request $request)
     {
+        $limit = config('services.google_places.max_requests', 10);
+        $processed = Cache::get('today_request_count', 0);
+
+        if ($processed >= $limit) {
+            return response()->json([
+                'error' => "Today has already processed {$processed} requests, which is the limit of {$limit}."
+            ], 429);
+        }
+
         $lng = $request->input('lng');
         $lat = $request->input('lat');
         $radius = $request->input('radius', 500); // 預設半徑為1000米
@@ -120,6 +129,8 @@ class HomeController extends Controller
         $response = Http::withOptions([
             'verify' => false,
         ])->withHeaders($headers)->post($url, $payload);
+
+        Cache::increment('today_request_count');
 
         if ($response->successful()) {
             $data = $response->json();
