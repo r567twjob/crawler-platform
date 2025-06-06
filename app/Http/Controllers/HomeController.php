@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Grid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
@@ -139,5 +140,12 @@ class HomeController extends Controller
             // 錯誤處理
             throw new \Exception("Error fetching data for {$lat}, {$lng}: " . $response->body());
         }
+    }
+
+    public function getApiGrid($gridId)
+    {
+        return Grid::find($gridId)
+            ? response()->json(Grid::find($gridId))
+            : response()->json(['error' => 'Grid not found'], 404);
     }
 }

@@ -13,6 +13,7 @@
     <div class="container">
         @yield('content')
     </div>
+    @yield('scripts')
     @vite('resources/js/app.js')
 </body>
 
