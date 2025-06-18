@@ -44,12 +44,28 @@ class ProcessController extends Controller
                 'lat' => $lat,
                 'lng' => $lng
             ]);
-            GoogleNearbySearchJob::dispatch($lat, $lng, $grid)->onQueue('nearby_search');
+            $queue_name = $this->selectAvailableApiKey(); // 可以用輪詢或權重機制
+            GoogleNearbySearchJob::dispatch($lat, $lng, $grid, $queue_name)->onQueue($queue_name);
         }
 
         $district->processed = true;
         $district->save();
 
         return response()->json(["message" => "Success"]);
+    }
+
+    private function selectAvailableApiKey(): string
+    {
+        $providers = config('services.google_places.keys');
+        $limit = config('services.google_places.max_requests', 10);
+
+        foreach ($providers as $key => $info) {
+            $usage = Cache::get("api_limit_{$key}_" . now()->toDateString(), 0);
+            if ($usage < $limit) {
+                return $key;
+            }
+        }
+
+        return 'pending';
     }
 }

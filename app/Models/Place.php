@@ -31,4 +31,9 @@ class Place extends Model
             $this->attributes['types'] = $value;
         }
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(GoogleReviews::class);
+    }
 }

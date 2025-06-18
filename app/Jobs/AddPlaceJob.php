@@ -58,7 +58,20 @@ class AddPlaceJob implements ShouldQueue
                 $resource['types'] = isset($data['types']) ? implode(',', $data['types']) : null;
 
                 // Save the place to the database
-                Place::updateOrCreate(['unique_id' => $data['id'], 'resource' => 'google'], $resource);
+                $place = Place::updateOrCreate(['unique_id' => $data['id'], 'resource' => 'google'], $resource);
+
+                // dd($place->id);
+                // // 新增 Reviews
+
+                foreach ($data['reviews'] ?? [] as $review) {
+                    $place->reviews()->create([
+                        'name' => $review["name"] ?? "",
+                        'relativePublishTimeDescription' => $review["relativePublishTimeDescription"] ?? "",
+                        'rating' => $review["rating"] ?? "",
+                        'text' => $review["text"]["text"] ?? "",
+                        'authorName' => $review["authorAttribution"]["displayName"] ?? ""
+                    ]);
+                }
             }
         }
     }

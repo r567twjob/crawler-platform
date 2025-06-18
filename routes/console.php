@@ -19,5 +19,5 @@ Artisan::command('inspire', function () {
 // Schedule::command('inspire')
 //     ->everyMinute();
 
-Schedule::command('app:process-job')->everySecond();
+// Schedule::command('app:process-job')->everySecond();
 Schedule::command('app:daily-clear-cache')->everyTwoHours();

@@ -12,19 +12,23 @@ class GoogleNearbySearchJob implements ShouldQueue
     use Queueable;
     public $tries = 3; // 限制最多重試 3 次
 
-    protected $lat, $lng, $grid;
+    protected $lat, $lng, $grid, $key;
 
-    public function __construct($lat, $lng, $grid)
+    public function __construct($lat, $lng, $grid, $key)
     {
         $this->lat = $lat;
         $this->lng = $lng;
         $this->grid = $grid;
+        $this->key = $key;
     }
 
     public function handle()
     {
+
         // 正式的 Nearby Search
-        $key = config('services.google_places.key');
+        $keys = config('services.google_places.keys');
+        $key = $keys[$this->key];
+
         // 文件參考: https://developers.google.com/maps/documentation/places/web-service/nearby-search?hl=zh-tw
         $url = 'https://places.googleapis.com/v1/places:searchNearby';
 
@@ -36,7 +40,9 @@ class GoogleNearbySearchJob implements ShouldQueue
             "places.rating",
             "places.userRatingCount",
             "places.location",
-            "places.googleMapsUri"
+            "places.googleMapsUri",
+            "places.photos",
+            "places.reviews",
         ]);
 
         $headers = [
