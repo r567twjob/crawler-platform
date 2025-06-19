@@ -13,6 +13,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Columns\Column;
 
 class PlaceResource extends Resource
 {
@@ -109,6 +112,18 @@ class PlaceResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make()->withColumns([
+                        Column::make('unique_id')->heading('店家GoogleID'),
+                        Column::make('name')->heading('店家名稱'),
+                        Column::make('formatted_address')->heading('店家地址'),
+                        Column::make('rating')->heading('店家評分'),
+                        Column::make('user_rating_count')->heading('店家總評論數'),
+                        Column::make('google_maps_uri')->heading('店家網址'),
+                        Column::make('lat')->heading('緯度'),
+                        Column::make('lng')->heading('經度'),
+                    ]),
+                ])
             ])
             ->paginated([10, 20, 30]) // 加入分頁選項
             ->defaultPaginationPageOption(10);

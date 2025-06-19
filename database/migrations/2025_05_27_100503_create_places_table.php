@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('user_rating_count')->nullable();
             $table->string('formatted_address')->nullable();
             $table->string('google_maps_uri')->nullable();
+            $table->float('lat', 10, 6)->nullable();
+            $table->float('lng', 10, 6)->nullable();
             $table->timestamps();
         });
     }

@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('grids', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('district_id')->constrained()->onDelete('cascade');
+            $table->bigInteger('district_id')->nullable();
+            $table->string('name')->nullable();
             $table->float('lat', 10, 6);
             $table->float('lng', 10, 6);
             $table->integer('place_count')->default(0);

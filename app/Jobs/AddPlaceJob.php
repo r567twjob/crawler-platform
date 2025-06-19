@@ -55,6 +55,8 @@ class AddPlaceJob implements ShouldQueue
                 $resource['user_rating_count'] = $data['userRatingCount'] ?? null;
                 $resource['formatted_address'] = $data['formattedAddress'] ?? null;
                 $resource['google_maps_uri'] = $data['googleMapsUri'] ?? null;
+                $resource['lat'] = $data['location']['latitude'] ?? null;
+                $resource['lng'] = $data['location']['longitude'] ?? null;
                 $resource['types'] = isset($data['types']) ? implode(',', $data['types']) : null;
 
                 // Save the place to the database

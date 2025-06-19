@@ -15,7 +15,9 @@ class Place extends Model
         'types',
         'rating',
         'user_rating_count',
-        'google_maps_uri'
+        'google_maps_uri',
+        'lat',
+        'lng'
     ];
 
     public function getTypesAttribute($value)
