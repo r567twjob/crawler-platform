@@ -1,18 +1,17 @@
-@extends('layouts.app')
-@section('title', 'Page Title')
-
-@section('content')
+<x-filament-panels::page>
 <h1>單一 NearSearch 爬蟲工具</h1>
-    <div class="col-md-3">
+    {{-- <div class="col-md-3">
         <form class="form-inline d-flex align-items-center mb-3" onsubmit="return false;">
             <input class="form-control me-2" type="text" name="" id="grid-id" placeholder="輸入 Grid ID" style="max-width: 150px;">
             <button type="button" class="btn btn-info" onclick="getGrid()">載入</button>
         </form>
-    </div>
+    </div> --}}
     <div class="col-md-3">
         <form class="mt-5" action="{{ route('google-grid.post') }}" method="POST">
             <div class="form-group">
                 @csrf
+                <label for="name">名稱</label>
+                <input type="text" name="name">
                 <label for="lng">經度 lng</label>
                 <input id="lng" type="number" class="form-control" name="lng" placeholder="請輸入經度" step="0.001" required>
 
@@ -25,8 +24,8 @@
             <button type="submit" class="mt-3 btn btn-primary">查詢 Google 爬蟲 資料(nearbySearch)</button>
         </form>
     </div>
-@endsection
 
+{{--
 @section('scripts')
     <script>
         function getGrid() {
@@ -49,4 +48,5 @@
                 .catch(error => console.error('Error fetching grid data:', error));
         }
     </script>
-@endsection
+@endsection --}}
+</x-filament-panels::page>

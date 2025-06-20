@@ -23,6 +23,8 @@ class DistrictResource extends Resource
     protected static ?string $model = District::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = '從行政區域建立';
+    protected static ?string $navigationGroup = '工具';
 
     public static function form(Form $form): Form
     {

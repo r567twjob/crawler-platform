@@ -10,6 +10,8 @@ use Filament\Forms\Components\Select;
 
 class GoogleJsonViewer extends Page
 {
+    protected static bool $shouldRegisterNavigation = false;
+
     public $name = 'google-json-viewer';
     public $message = "";
     public static ?string $title = "JSON 檔案檢視器 (Google)";

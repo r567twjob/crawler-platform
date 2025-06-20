@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\GoogleNearbySearchJob;
 use App\Models\District;
+use App\Models\Record;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 
@@ -38,6 +39,12 @@ class ProcessController extends Controller
         }
 
         Cache::put($district->id . '_nearby_progress', 0);
+
+        $record = new Record();
+        $record->resource = "從行政區域建立: {$district->name}";
+        $record->process = 0;
+        $record->total = count($grid);
+        $record->save();
 
         foreach ($grid as [$lat, $lng]) {
             $grid = $district->grids()->create([

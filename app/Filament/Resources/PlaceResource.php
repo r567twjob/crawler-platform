@@ -104,6 +104,22 @@ class PlaceResource extends Resource
                             });
                         }
                     }),
+
+                // Tables\Filters\SelectFilter::make('grid_id')
+                //     ->label('座標')
+                //     ->multiple()
+                //     ->options(
+                //         \App\Models\Grid::pluck('name')->toArray()
+                //     )
+                //     ->query(function ($query, $data) {
+                //         if (!empty($data['values'])) {
+                //             $query->where(function ($q) use ($data) {
+                //                 foreach ($data['values'] as $type) {
+                //                     $q->orWhereRaw("FIND_IN_SET(?, types)", [$type]);
+                //                 }
+                //             });
+                //         }
+                //     }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
