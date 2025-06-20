@@ -8,6 +8,7 @@ class Grid extends Model
 {
     protected $fillable = [
         'district_id',
+        'name',
         'lat',
         'lng',
     ];

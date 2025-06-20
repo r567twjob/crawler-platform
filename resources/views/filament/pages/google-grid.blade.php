@@ -8,10 +8,11 @@
     </div> --}}
     <div class="col-md-3">
         <form class="mt-5" action="{{ route('google-grid.post') }}" method="POST">
-            <div class="form-group">
+            <div class="form">
                 @csrf
                 <label for="name">名稱</label>
-                <input type="text" name="name">
+                <input type="text" name="name" id="name">
+
                 <label for="lng">經度 lng</label>
                 <input id="lng" type="number" class="form-control" name="lng" placeholder="請輸入經度" step="0.001" required>
 

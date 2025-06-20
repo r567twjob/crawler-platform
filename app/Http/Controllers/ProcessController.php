@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\GoogleNearbySearchJob;
 use App\Models\District;
+use App\Models\Grid;
 use App\Models\Record;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
@@ -74,5 +75,48 @@ class ProcessController extends Controller
         }
 
         return 'pending';
+    }
+
+    public function importCSV(Request $request)
+    {
+        $csvFile = $request->file('csv');
+
+        if (!$csvFile || !$csvFile->isValid()) {
+            return response()->json(['message' => 'Invalid CSV file'], 400);
+        }
+
+        $grid = [];
+
+        $handle = fopen($csvFile->getRealPath(), 'r');
+        if ($handle !== false) {
+            while (($data = fgetcsv($handle)) !== false) {
+                // 假設 CSV 每行格式為: lat, lng
+                if (count($data) >= 2) {
+                    $name = $data[0] ?? '';
+                    $lat = floatval($data[1]);
+                    $lng = floatval($data[2]);
+                    $grid[] = [$name, $lat, $lng];
+                }
+            }
+            fclose($handle);
+        }
+
+        $record = new Record();
+        $record->resource = "從CSV建立: {$csvFile->getClientOriginalName()}";
+        $record->process = 0;
+        $record->total = count($grid);
+        $record->save();
+
+        foreach ($grid as [$name, $lat, $lng]) {
+            $grid = Grid::create([
+                'name' => $name,
+                'lat' => $lat,
+                'lng' => $lng
+            ]);
+            $queue_name = $this->selectAvailableApiKey(); // 可以用輪詢或權重機制
+            GoogleNearbySearchJob::dispatch($lat, $lng, $grid, $queue_name)->onQueue($queue_name);
+        }
+
+        return response()->json(["message" => "Success"]);
     }
 }

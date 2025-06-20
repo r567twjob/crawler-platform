@@ -124,10 +124,10 @@ class GoogleNearbySearchJob implements ShouldQueue
 
         if ($response->successful()) {
             $data = $response->json();
-            Cache::increment($this->grid->district->id . '_nearby_progress');
+            // Cache::increment($this->grid->district->id . '_nearby_progress');
 
             // 儲存資料(JSON)
-            $folder = "app/places/{$this->grid->district->id}";
+            $folder = "app/places";
             $directory = storage_path($folder);
             if (!is_dir($directory)) {
                 mkdir($directory, 0755, true);

@@ -14,6 +14,8 @@ class GoogleGrid extends Page
     public $message = "";
     public static ?string $title = "CSV Importer";
 
+    protected static bool $shouldRegisterNavigation = false;
+
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static string $view = 'filament.pages.google-grid';

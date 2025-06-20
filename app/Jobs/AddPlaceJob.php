@@ -39,7 +39,7 @@ class AddPlaceJob implements ShouldQueue
 
     private function handleGooglePlaces(Grid $grid): void
     {
-        $folder = "app/places/{$grid->district->id}";
+        $folder = "app/places";
         $filename = storage_path("{$folder}/{$grid->id}.json");
         if (file_exists($filename)) {
             $json = file_get_contents($filename);
