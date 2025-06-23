@@ -9,9 +9,12 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists;
+use Filament\Infolists\Infolist as Infolist;
 
 class RecordResource extends Resource
 {
@@ -24,9 +27,7 @@ class RecordResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                //
-            ]);
+            ->schema([]);
     }
 
     public static function table(Table $table): Table
@@ -48,14 +49,16 @@ class RecordResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+            ])
             ->bulkActions([]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\PlacesRelationManager::class,
         ];
     }
 
@@ -63,8 +66,18 @@ class RecordResource extends Resource
     {
         return [
             'index' => Pages\ListRecords::route('/'),
-            // 'create' => Pages\CreateRecord::route('/create'),
-            // 'edit' => Pages\EditRecord::route('/{record}/edit'),
+            'view'  => Pages\ViewRecord::route('/{record}'),
         ];
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\TextEntry::make('name'),
+                Infolists\Components\TextEntry::make('email'),
+                Infolists\Components\TextEntry::make('notes')
+                    ->columnSpanFull(),
+            ]);
     }
 }

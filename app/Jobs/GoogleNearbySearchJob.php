@@ -12,13 +12,14 @@ class GoogleNearbySearchJob implements ShouldQueue
     use Queueable;
     public $tries = 3; // 限制最多重試 3 次
 
-    protected $lat, $lng, $grid, $key;
+    protected $lat, $lng, $grid, $record, $key;
 
-    public function __construct($lat, $lng, $grid, $key)
+    public function __construct($lat, $lng, $grid, $record, $key)
     {
         $this->lat = $lat;
         $this->lng = $lng;
         $this->grid = $grid;
+        $this->record = $record;
         $this->key = $key;
     }
 
@@ -136,7 +137,7 @@ class GoogleNearbySearchJob implements ShouldQueue
             file_put_contents($filename, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
             // 丟到 Queue 裡面新增 Place 資料
-            AddPlaceJob::dispatch($this->grid, 'google')->onQueue('default');
+            AddPlaceJob::dispatch($this->grid, $this->record, 'google')->onQueue('default');
 
             // 更新 grid 的 places_count
             $this->grid->place_count = count($data['places'] ?? []);

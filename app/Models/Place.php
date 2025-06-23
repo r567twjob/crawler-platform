@@ -38,4 +38,9 @@ class Place extends Model
     {
         return $this->hasMany(GoogleReviews::class);
     }
+
+    public function records()
+    {
+        return $this->belongsToMany(Record::class, 'record_place');
+    }
 }

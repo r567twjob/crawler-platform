@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('unique_id');
             $table->string('types');
             $table->string('name')->nullable();
-            $table->string('rating')->nullable();
-            $table->string('user_rating_count')->nullable();
+            $table->integer('rating')->nullable();
+            $table->integer('user_rating_count')->nullable();
             $table->string('formatted_address')->nullable();
             $table->string('google_maps_uri')->nullable();
             $table->float('lat', 10, 6)->nullable();

@@ -87,6 +87,19 @@ class PlaceResource extends Resource
                     ->searchable()
                     ->url(fn($record) => $record->google_maps_uri)
                     ->openUrlInNewTab(),
+                Tables\Columns\TextColumn::make('lat')
+                    ->label('緯度')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('lng')
+                    ->label('經度')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('rating')
+                    ->label('評分')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user_rating_count')
+                    ->label('評論數')
+                    ->sortable()
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('types')
@@ -105,21 +118,71 @@ class PlaceResource extends Resource
                         }
                     }),
 
-                // Tables\Filters\SelectFilter::make('grid_id')
-                //     ->label('座標')
-                //     ->multiple()
-                //     ->options(
-                //         \App\Models\Grid::pluck('name')->toArray()
-                //     )
-                //     ->query(function ($query, $data) {
-                //         if (!empty($data['values'])) {
-                //             $query->where(function ($q) use ($data) {
-                //                 foreach ($data['values'] as $type) {
-                //                     $q->orWhereRaw("FIND_IN_SET(?, types)", [$type]);
-                //                 }
-                //             });
-                //         }
-                //     }),
+                Tables\Filters\Filter::make('location_radius')
+                    ->label('經緯度範圍')
+                    ->form([
+                        Forms\Components\TextInput::make('center_lat')->label('中心緯度')->numeric(),
+                        Forms\Components\TextInput::make('center_lng')->label('中心經度')->numeric(),
+                        Forms\Components\TextInput::make('radius')->label('半徑(公里)')->numeric(),
+                    ])
+                    ->query(function ($query, $data) {
+                        if (
+                            isset($data['center_lat'], $data['center_lng'], $data['radius']) &&
+                            $data['center_lat'] !== null &&
+                            $data['center_lng'] !== null &&
+                            $data['radius'] !== null
+                        ) {
+                            $lat = (float)$data['center_lat'];
+                            $lng = (float)$data['center_lng'];
+                            $radius = (float)$data['radius'];
+
+                            // 地球半徑 (公里)
+                            $earthRadius = 6371;
+
+                            // 緯度範圍
+                            $latDelta = rad2deg($radius / $earthRadius);
+
+                            // 經度範圍 (需考慮緯度)
+                            $lngDelta = rad2deg($radius / $earthRadius / cos(deg2rad($lat)));
+
+                            $minLat = $lat - $latDelta;
+                            $maxLat = $lat + $latDelta;
+                            $minLng = $lng - $lngDelta;
+                            $maxLng = $lng + $lngDelta;
+
+                            $query->whereBetween('lat', [$minLat, $maxLat])
+                                ->whereBetween('lng', [$minLng, $maxLng]);
+                        }
+                    }),
+
+                Tables\Filters\Filter::make('rating')
+                    ->label('評分')
+                    ->form([
+                        Forms\Components\TextInput::make('min_rating')->label('最小評分')->numeric(),
+                        Forms\Components\TextInput::make('max_rating')->label('最大評分')->numeric(),
+                    ])
+                    ->query(function ($query, $data) {
+                        if ($data['min_rating'] !== null) {
+                            $query->where('rating', '>=', $data['min_rating']);
+                        }
+                        if ($data['max_rating'] !== null) {
+                            $query->where('rating', '<=', $data['max_rating']);
+                        }
+                    }),
+
+                Tables\Filters\Filter::make('user_rating_count')
+                    ->label('評論數')
+                    ->form([
+                        Forms\Components\TextInput::make('min_count')->label('最小評論數')->numeric(),
+                    ])
+                    ->query(function ($query, $data) {
+                        if ($data['min_count'] !== null) {
+                            $query->where('user_rating_count', '>=', $data['min_count']);
+                        }
+                    }),
+
+
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

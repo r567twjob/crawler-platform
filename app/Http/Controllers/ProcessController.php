@@ -53,7 +53,7 @@ class ProcessController extends Controller
                 'lng' => $lng
             ]);
             $queue_name = $this->selectAvailableApiKey(); // 可以用輪詢或權重機制
-            GoogleNearbySearchJob::dispatch($lat, $lng, $grid, $queue_name)->onQueue($queue_name);
+            GoogleNearbySearchJob::dispatch($lat, $lng, $grid, $record, $queue_name)->onQueue($queue_name);
         }
 
         $district->processed = true;
@@ -114,7 +114,7 @@ class ProcessController extends Controller
                 'lng' => $lng
             ]);
             $queue_name = $this->selectAvailableApiKey(); // 可以用輪詢或權重機制
-            GoogleNearbySearchJob::dispatch($lat, $lng, $grid, $queue_name)->onQueue($queue_name);
+            GoogleNearbySearchJob::dispatch($lat, $lng, $grid, $record, $queue_name)->onQueue($queue_name);
         }
 
         return response()->json(["message" => "Success"]);

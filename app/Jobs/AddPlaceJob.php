@@ -12,14 +12,16 @@ class AddPlaceJob implements ShouldQueue
 {
     use Queueable;
     public $grid;
+    public $record;
     public $resource = '';
 
     /**
      * Create a new job instance.
      */
-    public function __construct($grid, $resource)
+    public function __construct($grid, $record, $resource)
     {
         $this->grid = $grid;
+        $this->record = $record;
         $this->resource = $resource;
     }
 
@@ -63,8 +65,7 @@ class AddPlaceJob implements ShouldQueue
                 // Save the place to the database
                 $place = Place::updateOrCreate(['unique_id' => $data['id'], 'resource' => 'google'], $resource);
 
-                // dd($place->id);
-                // // 新增 Reviews
+                $this->record->places()->attach($place->id);
 
                 foreach ($data['reviews'] ?? [] as $review) {
                     $place->reviews()->create([
