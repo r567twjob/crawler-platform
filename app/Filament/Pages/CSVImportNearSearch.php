@@ -15,7 +15,7 @@ class CSVImportNearSearch extends Page
     public static ?string $title = "CSV Importer";
 
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'heroicon-o-table-cells';
     protected static string $view = 'filament.pages.csv-importer';
     protected static ?string $navigationLabel = 'CSV匯入建立';
     protected static ?string $navigationGroup = '工具';

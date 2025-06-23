@@ -6,13 +6,16 @@ use App\Filament\Resources\PlaceResource\Pages;
 use App\Filament\Resources\PlaceResource\RelationManagers;
 use App\Models\Place;
 use App\Models\PlaceType;
+use DeepCopy\Filter\Filter;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\DB;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use pxlrbt\FilamentExcel\Columns\Column;
@@ -123,7 +126,7 @@ class PlaceResource extends Resource
                     ->form([
                         Forms\Components\TextInput::make('center_lat')->label('中心緯度')->numeric(),
                         Forms\Components\TextInput::make('center_lng')->label('中心經度')->numeric(),
-                        Forms\Components\TextInput::make('radius')->label('半徑(公里)')->numeric(),
+                        Forms\Components\TextInput::make('radius')->label('半徑(公尺)')->numeric(),
                     ])
                     ->query(function ($query, $data) {
                         if (
@@ -136,8 +139,8 @@ class PlaceResource extends Resource
                             $lng = (float)$data['center_lng'];
                             $radius = (float)$data['radius'];
 
-                            // 地球半徑 (公里)
-                            $earthRadius = 6371;
+                            // 地球半徑 (公尺)
+                            $earthRadius = 637100;
 
                             // 緯度範圍
                             $latDelta = rad2deg($radius / $earthRadius);
@@ -159,14 +162,10 @@ class PlaceResource extends Resource
                     ->label('評分')
                     ->form([
                         Forms\Components\TextInput::make('min_rating')->label('最小評分')->numeric(),
-                        Forms\Components\TextInput::make('max_rating')->label('最大評分')->numeric(),
                     ])
                     ->query(function ($query, $data) {
                         if ($data['min_rating'] !== null) {
                             $query->where('rating', '>=', $data['min_rating']);
-                        }
-                        if ($data['max_rating'] !== null) {
-                            $query->where('rating', '<=', $data['max_rating']);
                         }
                     }),
 
@@ -183,7 +182,7 @@ class PlaceResource extends Resource
 
 
 
-            ])
+            ], layout: FiltersLayout::AboveContent) // 將篩選器放在表格上方
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -191,6 +190,7 @@ class PlaceResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+
                 ExportBulkAction::make()->exports([
                     ExcelExport::make()->withColumns([
                         Column::make('unique_id')->heading('店家GoogleID'),
@@ -202,7 +202,27 @@ class PlaceResource extends Resource
                         Column::make('lat')->heading('緯度'),
                         Column::make('lng')->heading('經度'),
                     ]),
-                ])
+                ]),
+
+                Tables\Actions\BulkAction::make('add_to_map_place')
+                    ->label('加入到地圖')
+                    ->form([
+                        Forms\Components\Select::make('map_id')
+                            ->label('選擇地圖')
+                            ->options(\App\Models\Map::pluck('name', 'id'))
+                            ->required(),
+                    ])
+                    ->action(function ($records, $data) {
+                        foreach ($records as $record) {
+                            DB::table('map_place')->updateOrInsert(
+                                ['map_id' => $data['map_id'], 'place_id' => $record->id],
+                                ['created_at' => now(), 'updated_at' => now()]
+                            );
+                        }
+                    })
+                    ->requiresConfirmation()
+                    ->deselectRecordsAfterCompletion()
+                    ->icon('heroicon-o-plus'),
             ])
             ->paginated([10, 20, 30]) // 加入分頁選項
             ->defaultPaginationPageOption(10);

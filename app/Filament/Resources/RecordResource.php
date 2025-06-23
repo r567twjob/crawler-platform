@@ -22,7 +22,7 @@ class RecordResource extends Resource
     protected static ?string $pluralModelLabel = '紀錄列表';
     protected static ?string $model = Record::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
 
     public static function form(Form $form): Form
     {
