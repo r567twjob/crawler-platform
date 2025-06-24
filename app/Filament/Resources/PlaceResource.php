@@ -16,6 +16,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use pxlrbt\FilamentExcel\Columns\Column;
@@ -140,7 +141,7 @@ class PlaceResource extends Resource
                             $radius = (float)$data['radius'];
 
                             // 地球半徑 (公尺)
-                            $earthRadius = 637100;
+                            $earthRadius = 6378137;
 
                             // 緯度範圍
                             $latDelta = rad2deg($radius / $earthRadius);

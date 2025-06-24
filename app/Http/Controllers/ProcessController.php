@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CreateGridJob;
 use App\Jobs\GoogleNearbySearchJob;
 use App\Models\District;
 use App\Models\Grid;
@@ -35,7 +36,7 @@ class ProcessController extends Controller
         $grid = [];
         for ($lat = $latMin; $lat <= $latMax; $lat += $step) {
             for ($lng = $lngMin; $lng <= $lngMax; $lng += $step) {
-                $grid[] = [round($lat, 6), round($lng, 6)];
+                $grid[] = ['', round($lat, 6), round($lng, 6)];
             }
         }
 
@@ -47,34 +48,12 @@ class ProcessController extends Controller
         $record->total = count($grid);
         $record->save();
 
-        foreach ($grid as [$lat, $lng]) {
-            $grid = $district->grids()->create([
-                'lat' => $lat,
-                'lng' => $lng
-            ]);
-            $queue_name = $this->selectAvailableApiKey(); // 可以用輪詢或權重機制
-            GoogleNearbySearchJob::dispatch($lat, $lng, $grid, $record, $queue_name)->onQueue($queue_name);
-        }
+        CreateGridJob::dispatch($grid, $record)->onQueue('default');
 
         $district->processed = true;
         $district->save();
 
         return response()->json(["message" => "Success"]);
-    }
-
-    private function selectAvailableApiKey(): string
-    {
-        $providers = config('services.google_places.keys');
-        $limit = config('services.google_places.max_requests', 10);
-
-        foreach ($providers as $key => $info) {
-            $usage = Cache::get("api_limit_{$key}_" . now()->toDateString(), 0);
-            if ($usage < $limit) {
-                return $key;
-            }
-        }
-
-        return 'pending';
     }
 
     public function importCSV(Request $request)
@@ -107,15 +86,7 @@ class ProcessController extends Controller
         $record->total = count($grid);
         $record->save();
 
-        foreach ($grid as [$name, $lat, $lng]) {
-            $grid = Grid::create([
-                'name' => $name,
-                'lat' => $lat,
-                'lng' => $lng
-            ]);
-            $queue_name = $this->selectAvailableApiKey(); // 可以用輪詢或權重機制
-            GoogleNearbySearchJob::dispatch($lat, $lng, $grid, $record, $queue_name)->onQueue($queue_name);
-        }
+        CreateGridJob::dispatch($grid, $record)->onQueue('default');
 
         return response()->json(["message" => "Success"]);
     }
