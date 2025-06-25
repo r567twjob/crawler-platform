@@ -47,7 +47,7 @@ class ProcessJob extends Command
                     '--queue' => 'nearby_search',
                     '--timeout' => 60,
                 ]);
-                Cache::increment('today_request_count');
+                // Cache::increment('today_request_count');
             }
         }
     }

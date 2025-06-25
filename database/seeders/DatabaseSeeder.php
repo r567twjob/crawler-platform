@@ -84,8 +84,5 @@ class DatabaseSeeder extends Seeder
                 'key'  => $type[0]
             ]);
         }
-
-        Cache::put("today_request_count", 0);
-        Cache::put("today_request_day", date("Y-m-d"));
     }
 }

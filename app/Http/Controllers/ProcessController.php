@@ -16,10 +16,10 @@ class ProcessController extends Controller
     public function startNearbySearch(Request $request)
     {
         // 檢查是否有 Total Request Cache
-        $totalRequestCache = Cache::get('today_request_count', 0);
-        if ($totalRequestCache >= config('services.google_places.max_requests', 10)) {
-            return response()->json(['message' => '今日已達請求上限'], 429);
-        }
+        // $totalRequestCache = Cache::get('today_request_count', 0);
+        // if ($totalRequestCache >= config('services.google_places.max_requests', 10)) {
+        //     return response()->json(['message' => '今日已達請求上限'], 429);
+        // }
 
         $district = District::find($request->input('district'));
 
@@ -40,7 +40,7 @@ class ProcessController extends Controller
             }
         }
 
-        Cache::put($district->id . '_nearby_progress', 0);
+        // Cache::put($district->id . '_nearby_progress', 0);
 
         $record = new Record();
         $record->resource = "從行政區域建立: {$district->name}";

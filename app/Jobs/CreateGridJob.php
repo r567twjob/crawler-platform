@@ -51,8 +51,16 @@ class CreateGridJob implements ShouldQueue
         $limit = config('services.google_places.max_requests', 10);
 
         foreach ($providers as $key => $info) {
-            $usage = Cache::get("api_limit_{$key}_" . now()->toDateString(), 0);
+            $usage = Cache::get("api_limit_{$key}_" . now()->toDateString());
+
+            // 如果當天沒有使用記錄，則初始化為0
+            if ($usage === null) {
+                Cache::put("api_limit_{$key}_" . now()->toDateString(), 0, 86400); // 24 hours
+                $usage = 0;
+            }
+
             if ($usage < $limit) {
+                Cache::increment("api_limit_{$key}_" . now()->toDateString());
                 return $key;
             }
         }

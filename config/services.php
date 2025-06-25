@@ -40,9 +40,9 @@ return [
         'keys' => [
             'key1' => env('GOOGLE_PLACES_API_KEY_1'),
             'key2' => env('GOOGLE_PLACES_API_KEY_2'),
-            'key3' => env('GOOGLE_PLACES_API_KEY_3'),
-            'key4' => env('GOOGLE_PLACES_API_KEY_4'),
-            'key5' => env('GOOGLE_PLACES_API_KEY_5'),
+            // 'key3' => env('GOOGLE_PLACES_API_KEY_3'),
+            // 'key4' => env('GOOGLE_PLACES_API_KEY_4'),
+            // 'key5' => env('GOOGLE_PLACES_API_KEY_5'),
         ],
         'max_requests' => env('NEARBYSEARCH_MAX_REQUESTS', 10),
     ],

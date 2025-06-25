@@ -60,12 +60,12 @@ class AddPlaceJob implements ShouldQueue
                 $resource['lat'] = $data['location']['latitude'] ?? null;
                 $resource['lng'] = $data['location']['longitude'] ?? null;
                 $resource['types'] = isset($data['types']) ? implode(',', $data['types']) : null;
-                // $resource['grid_id'] = $grid->id;
+                $resource['grid_id'] = $grid->id;
 
                 // Save the place to the database
-                if (!isset($data['formattedAddress']) || strpos($data['formattedAddress'], '高雄') === false) {
-                    continue; // Skip places not in Kaohsiung
-                }
+                // if (!isset($data['formattedAddress']) || strpos($data['formattedAddress'], '高雄') === false) {
+                //     continue; // Skip places not in Kaohsiung
+                // }
 
                 $place = Place::updateOrCreate(['unique_id' => $data['id'], 'resource' => 'google'], $resource);
 
